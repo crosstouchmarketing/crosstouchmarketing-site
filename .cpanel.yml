@@ -1,0 +1,10 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/jsvltmmt9ft5/public_html/
+    - /bin/cp index.html $DEPLOYPATH
+    - /bin/cp blog.html $DEPLOYPATH
+    - /bin/cp contact.html $DEPLOYPATH
+    - /bin/cp enterprise-intake.html $DEPLOYPATH
+    - /bin/cp posts.json $DEPLOYPATH
+    - /bin/cp -R posts/ $DEPLOYPATH
