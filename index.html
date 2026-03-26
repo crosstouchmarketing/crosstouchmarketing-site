@@ -667,4 +667,16 @@ async function generateReport() {
     cachedRecs = [{category:"Note", recommendation:"We were unable to generate recommendations right now. Please try again in a moment."}];
     cachedQW = "";
   }
-  a
+  auditState = "results";
+  render();
+}
+
+// ── INIT ────────────────────────────────────────────────────────
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll('.pa').forEach(function(el){ el.style.display='none'; });
+  document.querySelectorAll('.pa-note').forEach(function(el){ el.style.display='none'; });
+  render();
+});
+</script>
+</body>
+</html>
