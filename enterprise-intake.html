@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Enterprise Onboarding — CrossTouch Marketing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<!-- reCAPTCHA v3 — replace YOUR_RECAPTCHA_SITE_KEY with your actual key -->
+<script src="https://www.google.com/recaptcha/api.js?render=YOUR_RECAPTCHA_SITE_KEY"></script>
+<style>
+:root{
+  --teal:#0a6b6f;--teal-dark:#084f52;--teal-light:#0d8f95;
+  --cyan-light:#d6f2f2;--white:#fff;--off-white:#f4f9f9;
+  --border:#b8dede;--text:#0a1f26;--text-mid:#1e4a52;--text-light:#3d6b73;--gold:#b8912a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--off-white);color:var(--text);-webkit-font-smoothing:antialiased;}
+nav{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 40px;height:68px;display:flex;align-items:center;justify-content:space-between;}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+a{color:inherit;}
+.page-wrap{max-width:760px;margin:0 auto;padding:60px 24px 80px;}
+.page-header{text-align:center;margin-bottom:48px;}
+.eyebrow{font-size:12px;font-weight:700;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:12px;}
+h1{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,44px);line-height:1.1;letter-spacing:-0.02em;margin-bottom:16px;}
+.sub{font-size:17px;color:var(--text-mid);line-height:1.7;font-weight:500;max-width:520px;margin:0 auto;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:20px;padding:40px;box-shadow:0 4px 24px rgba(10,107,111,0.06);}
+.step-indicator{display:flex;gap:0;margin-bottom:40px;border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.step-item{flex:1;padding:12px 8px;text-align:center;font-size:12px;font-weight:700;color:var(--text-light);background:var(--off-white);transition:all 0.3s;border-right:1px solid var(--border);}
+.step-item:last-child{border-right:none;}
+.step-item.active{background:var(--teal);color:white;}
+.step-item.done{background:var(--cyan-light);color:var(--teal);}
+.step-num{display:block;font-size:16px;font-weight:700;margin-bottom:2px;}
+.form-section{display:none;}
+.form-section.active{display:block;animation:fadeUp 0.3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.section-title{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px;}
+.section-sub{font-size:14px;color:var(--text-mid);font-weight:500;margin-bottom:28px;}
+.field{margin-bottom:20px;}
+.field label{display:block;font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.field input,.field textarea,.field select{width:100%;padding:13px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;color:var(--text);background:var(--white);transition:border-color 0.2s;outline:none;font-weight:500;}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(10,107,111,0.08);}
+.field textarea{min-height:100px;resize:vertical;line-height:1.6;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.opt-card{border:1.5px solid var(--border);border-radius:10px;padding:12px 16px;cursor:pointer;transition:all 0.15s;font-size:14px;font-weight:500;color:var(--text-mid);display:flex;align-items:center;gap:10px;background:var(--white);}
+.opt-card:hover{border-color:var(--teal-light);background:var(--cyan-light);color:var(--teal);}
+.opt-card.selected{border-color:var(--teal);background:var(--cyan-light);color:var(--teal-dark);font-weight:600;}
+.opt-dot{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.opt-dot-fill{width:6px;height:6px;border-radius:50%;background:var(--teal);display:none;}
+.opt-card.selected .opt-dot-fill{display:block;}
+.nav-buttons{display:flex;justify-content:space-between;margin-top:32px;}
+.btn-primary{background:var(--teal);color:white;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover:not(:disabled){background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(10,107,111,0.3);}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;}
+.btn-ghost{background:transparent;color:var(--text-mid);padding:12px 20px;border-radius:8px;font-size:14px;font-weight:600;border:1.5px solid var(--border);cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+.what-to-expect{background:linear-gradient(135deg,var(--teal-dark),var(--teal));color:white;border-radius:16px;padding:28px;margin-bottom:32px;}
+.expect-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
+.expect-item:last-child{margin-bottom:0;}
+.expect-icon{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.success-screen{display:none;text-align:center;padding:20px 0;}
+.error-msg{background:#fff0f0;border:1px solid #ffcdd2;border-radius:10px;padding:12px 16px;font-size:14px;color:#c62828;font-weight:500;margin-top:16px;display:none;}
+.recaptcha-note{font-size:11px;color:var(--text-light);text-align:center;margin-top:12px;line-height:1.5;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">
+    <svg width="192" height="36" viewBox="0 0 192 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="18" cy="18" r="5" fill="#0a6b6f"/>
+      <path d="M8 18 C8 12.477 12.477 8 18 8" stroke="#0a6b6f" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M28 18 C28 23.523 23.523 28 18 28" stroke="#0a6b6f" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M3 18 C3 9.716 9.716 3 18 3" stroke="#0d8f95" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.45"/>
+      <path d="M33 18 C33 26.284 26.284 33 18 33" stroke="#0d8f95" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.45"/>
+      <text x="46" y="13" font-family="Cormorant Garamond, serif" font-size="13" font-weight="700" fill="#0a1f26" letter-spacing="2">CROSSTOUCH</text>
+      <line x1="46" y1="16.5" x2="188" y2="16.5" stroke="#b8dede" stroke-width="0.75"/>
+      <text x="46" y="27" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="600" fill="#1e4a52" letter-spacing="3.5">MARKETING</text>
+    </svg>
+  </a>
+  <a href="index.html" style="font-size:14px;font-weight:600;color:var(--text-mid);text-decoration:none;">← Back to site</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="page-header">
+    <div class="eyebrow">Enterprise Plan</div>
+    <h1>Let's build your<br><em style="color:var(--teal);font-style:italic;">email growth engine.</em></h1>
+    <p class="sub">Tell us about your business and goals. We'll review your intake within one business day and reach out to schedule your first strategy session.</p>
+  </div>
+
+  <div class="what-to-expect">
+    <div style="font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7;margin-bottom:16px;">What happens next</div>
+    <div class="expect-item"><div class="expect-icon">📋</div><div><div style="font-size:14px;font-weight:700;margin-bottom:2px;">Complete this intake</div><div style="font-size:13px;opacity:0.8;font-weight:500;">5 minutes. Covers your business, email stack, and goals.</div></div></div>
+    <div class="expect-item"><div class="expect-icon">📬</div><div><div style="font-size:14px;font-weight:700;margin-bottom:2px;">We review within 1 business day</div><div style="font-size:13px;opacity:0.8;font-weight:500;">A senior strategist personally reviews your submission.</div></div></div>
+    <div class="expect-item"><div class="expect-icon">📅</div><div><div style="font-size:14px;font-weight:700;margin-bottom:2px;">Strategy session scheduled</div><div style="font-size:13px;opacity:0.8;font-weight:500;">Your first monthly 1:1 is booked and your platform access activated.</div></div></div>
+  </div>
+
+  <div class="card">
+    <!-- Step indicator -->
+    <div class="step-indicator" id="steps">
+      <div class="step-item active" id="step-ind-1"><span class="step-num">01</span>About You</div>
+      <div class="step-item" id="step-ind-2"><span class="step-num">02</span>Your Email Program</div>
+      <div class="step-item" id="step-ind-3"><span class="step-num">03</span>Goals</div>
+      <div class="step-item" id="step-ind-4"><span class="step-num">04</span>Confirm</div>
+    </div>
+
+    <!-- STEP 1: About You -->
+    <div class="form-section active" id="section-1">
+      <div class="section-title">Tell us about yourself</div>
+      <div class="section-sub">Basic contact and company information.</div>
+      <div class="field-row">
+        <div class="field"><label>First Name *</label><input type="text" id="first_name" placeholder="Lisa"/></div>
+        <div class="field"><label>Last Name *</label><input type="text" id="last_name" placeholder="Smith"/></div>
+      </div>
+      <div class="field"><label>Business Email *</label><input type="email" id="email" placeholder="you@company.com"/></div>
+      <div class="field"><label>Company / Brand Name *</label><input type="text" id="company" placeholder="Your Company"/></div>
+      <div class="field"><label>Your Role / Title</label><input type="text" id="role" placeholder="e.g. Founder, Marketing Director"/></div>
+      <div class="field"><label>Website URL</label><input type="text" id="website" placeholder="https://yoursite.com"/></div>
+      <div class="field">
+        <label>Business Type *</label>
+        <div class="opt-grid" id="biz-type-opts">
+          <div class="opt-card" onclick="selectOpt('biz_type','Ecommerce / DTC Brand',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Ecommerce / DTC Brand</div>
+          <div class="opt-card" onclick="selectOpt('biz_type','B2B / Service Business',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>B2B / Service Business</div>
+          <div class="opt-card" onclick="selectOpt('biz_type','Coach or Creator',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Coach or Creator</div>
+          <div class="opt-card" onclick="selectOpt('biz_type','Agency',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Agency</div>
+        </div>
+        <input type="hidden" id="biz_type"/>
+      </div>
+      <div class="nav-buttons">
+        <div></div>
+        <button class="btn-primary" onclick="goStep(2)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Email Program -->
+    <div class="form-section" id="section-2">
+      <div class="section-title">Your current email program</div>
+      <div class="section-sub">Help us understand where you are today.</div>
+      <div class="field">
+        <label>Email Platform (ESP) *</label>
+        <select id="esp">
+          <option value="">Select your platform...</option>
+          <option>Klaviyo</option><option>ActiveCampaign</option><option>Mailchimp</option>
+          <option>HubSpot</option><option>ConvertKit</option><option>Drip</option>
+          <option>Salesforce Marketing Cloud</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>List Size *</label>
+        <div class="opt-grid">
+          <div class="opt-card" onclick="selectOpt('list_size','Under 5,000',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Under 5,000</div>
+          <div class="opt-card" onclick="selectOpt('list_size','5,000 – 25,000',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>5,000 – 25,000</div>
+          <div class="opt-card" onclick="selectOpt('list_size','25,000 – 100,000',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>25,000 – 100,000</div>
+          <div class="opt-card" onclick="selectOpt('list_size','100,000+',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>100,000+</div>
+        </div>
+        <input type="hidden" id="list_size"/>
+      </div>
+      <div class="field">
+        <label>Monthly Email Revenue (approximate)</label>
+        <select id="email_revenue">
+          <option value="">Prefer not to say / Don't track</option>
+          <option>Under $5,000/mo</option><option>$5,000 – $20,000/mo</option>
+          <option>$20,000 – $100,000/mo</option><option>$100,000+/mo</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>How many people manage email at your company?</label>
+        <div class="opt-grid">
+          <div class="opt-card" onclick="selectOpt('team_size','Just me',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Just me</div>
+          <div class="opt-card" onclick="selectOpt('team_size','2–3 people',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>2–3 people</div>
+          <div class="opt-card" onclick="selectOpt('team_size','4–10 people',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>4–10 people</div>
+          <div class="opt-card" onclick="selectOpt('team_size','10+ / Agency team',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>10+ / Agency team</div>
+        </div>
+        <input type="hidden" id="team_size"/>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-ghost" onclick="goStep(1)">← Back</button>
+        <button class="btn-primary" onclick="goStep(3)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Goals -->
+    <div class="form-section" id="section-3">
+      <div class="section-title">Your goals and challenges</div>
+      <div class="section-sub">This shapes your first strategy session and 90-day roadmap.</div>
+      <div class="field">
+        <label>Primary Goal for the Next 90 Days *</label>
+        <div class="opt-grid">
+          <div class="opt-card" onclick="selectOpt('primary_goal','Drive more revenue',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Drive more revenue</div>
+          <div class="opt-card" onclick="selectOpt('primary_goal','Improve engagement',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Improve engagement</div>
+          <div class="opt-card" onclick="selectOpt('primary_goal','Build automation coverage',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Build automation coverage</div>
+          <div class="opt-card" onclick="selectOpt('primary_goal','Fix deliverability',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Fix deliverability</div>
+          <div class="opt-card" onclick="selectOpt('primary_goal','Scale list growth',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Scale list growth</div>
+          <div class="opt-card" onclick="selectOpt('primary_goal','Reactivate subscribers',this)"><div class="opt-dot"><div class="opt-dot-fill"></div></div>Reactivate subscribers</div>
+        </div>
+        <input type="hidden" id="primary_goal"/>
+      </div>
+      <div class="field">
+        <label>Biggest Email Marketing Challenge *</label>
+        <textarea id="challenge" placeholder="Describe the biggest obstacle or gap in your current email program. Be as specific as you can — this helps us prepare for your first session."></textarea>
+      </div>
+      <div class="field">
+        <label>Anything else you'd like us to know?</label>
+        <textarea id="additional_info" placeholder="Previous agency experience, specific campaigns you've tried, tools you use, integrations, anything relevant..." style="min-height:80px;"></textarea>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-ghost" onclick="goStep(2)">← Back</button>
+        <button class="btn-primary" onclick="goStep(4)">Review Submission →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Review + Submit -->
+    <div class="form-section" id="section-4">
+      <div class="section-title">Review your submission</div>
+      <div class="section-sub">Confirm everything looks right before we send it through.</div>
+      <div id="review-content" style="background:var(--off-white);border-radius:12px;padding:24px;margin-bottom:24px;font-size:14px;line-height:1.8;color:var(--text-mid);font-weight:500;"></div>
+      <div style="background:var(--cyan-light);border-radius:10px;padding:16px 20px;margin-bottom:24px;font-size:13px;color:var(--teal-dark);font-weight:500;line-height:1.55;">
+        <strong>✓ What happens after you submit:</strong> A member of our team will personally review your intake within one business day and reach out to schedule your first strategy session and activate your platform access.
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-ghost" onclick="goStep(3)">← Back</button>
+        <button class="btn-primary" id="submit-btn" onclick="submitForm()">Submit & Get Started →</button>
+      </div>
+      <div id="error-msg" class="error-msg">Something went wrong. Please try again or email us at team@crosstouchmarketing.com</div>
+      <p class="recaptcha-note">This form is protected by Google reCAPTCHA v3.<br>Your submission is encrypted and secure.</p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="success-screen">
+      <div style="font-size:64px;margin-bottom:20px;">🎉</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:28px;margin-bottom:12px;">You're in the queue.</h2>
+      <p style="font-size:16px;color:var(--text-mid);line-height:1.7;font-weight:500;max-width:400px;margin:0 auto 32px;">We've received your intake and a confirmation has been sent to your email. Expect to hear from us within one business day.</p>
+      <a href="index.html" class="btn-primary">Return to CrossTouch Marketing</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIGURATION — replace these placeholders ──────────────────
+var EMAILJS_PUBLIC_KEY   = "YOUR_EMAILJS_PUBLIC_KEY";
+var EMAILJS_SERVICE_ID   = "YOUR_EMAILJS_SERVICE_ID";
+var EMAILJS_TEMPLATE_ID  = "YOUR_EMAILJS_TEMPLATE_ID";
+var RECAPTCHA_SITE_KEY   = "YOUR_RECAPTCHA_SITE_KEY";
+// ───────────────────────────────────────────────────────────────
+
+emailjs.init(EMAILJS_PUBLIC_KEY);
+
+var formData = {};
+var currentStep = 1;
+
+function selectOpt(field, value, el) {
+  formData[field] = value;
+  document.getElementById(field).value = value;
+  var parent = el.parentNode;
+  var cards = parent.querySelectorAll('.opt-card');
+  cards.forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function validateStep(step) {
+  if (step === 1) {
+    var fn = document.getElementById('first_name').value.trim();
+    var ln = document.getElementById('last_name').value.trim();
+    var em = document.getElementById('email').value.trim();
+    var co = document.getElementById('company').value.trim();
+    var bt = document.getElementById('biz_type').value;
+    if (!fn || !ln || !em || !co || !bt) {
+      alert("Please fill in all required fields and select a business type.");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) {
+      alert("Please enter a valid email address.");
+      return false;
+    }
+  }
+  if (step === 2) {
+    if (!document.getElementById('esp').value) {
+      alert("Please select your email platform.");
+      return false;
+    }
+    if (!document.getElementById('list_size').value) {
+      alert("Please select your list size.");
+      return false;
+    }
+  }
+  if (step === 3) {
+    if (!document.getElementById('primary_goal').value) {
+      alert("Please select your primary goal.");
+      return false;
+    }
+    if (!document.getElementById('challenge').value.trim()) {
+      alert("Please describe your biggest email marketing challenge.");
+      return false;
+    }
+  }
+  return true;
+}
+
+function collectData() {
+  formData.first_name    = document.getElementById('first_name').value.trim();
+  formData.last_name     = document.getElementById('last_name').value.trim();
+  formData.email         = document.getElementById('email').value.trim();
+  formData.company       = document.getElementById('company').value.trim();
+  formData.role          = document.getElementById('role').value.trim();
+  formData.website       = document.getElementById('website').value.trim();
+  formData.esp           = document.getElementById('esp').value;
+  formData.email_revenue = document.getElementById('email_revenue').value;
+  formData.challenge     = document.getElementById('challenge').value.trim();
+  formData.additional    = document.getElementById('additional_info').value.trim();
+}
+
+function goStep(n) {
+  if (n > currentStep && !validateStep(currentStep)) return;
+  if (n === 4) {
+    collectData();
+    renderReview();
+  }
+  document.getElementById('section-' + currentStep).classList.remove('active');
+  document.getElementById('step-ind-' + currentStep).classList.remove('active');
+  document.getElementById('step-ind-' + currentStep).classList.add('done');
+  currentStep = n;
+  document.getElementById('section-' + currentStep).classList.add('active');
+  document.getElementById('step-ind-' + currentStep).classList.remove('done');
+  document.getElementById('step-ind-' + currentStep).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function renderReview() {
+  collectData();
+  var html = [
+    ['Name', formData.first_name + ' ' + formData.last_name],
+    ['Email', formData.email],
+    ['Company', formData.company],
+    ['Role', formData.role || '—'],
+    ['Website', formData.website || '—'],
+    ['Business Type', formData.biz_type || '—'],
+    ['Email Platform', formData.esp],
+    ['List Size', formData.list_size || '—'],
+    ['Team Size', formData.team_size || '—'],
+    ['Monthly Email Revenue', formData.email_revenue || '—'],
+    ['Primary Goal', formData.primary_goal || '—'],
+    ['Biggest Challenge', formData.challenge],
+  ].map(function(r){
+    return '<div style="display:flex;gap:12px;padding:6px 0;border-bottom:1px solid var(--border);"><span style="font-weight:700;color:var(--text);min-width:180px;flex-shrink:0;">'+r[0]+'</span><span>'+r[1]+'</span></div>';
+  }).join('');
+  document.getElementById('review-content').innerHTML = html;
+}
+
+async function submitForm() {
+  collectData();
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  document.getElementById('error-msg').style.display = 'none';
+
+  try {
+    // reCAPTCHA v3
+    var token = await new Promise(function(resolve, reject) {
+      grecaptcha.ready(function() {
+        grecaptcha.execute(RECAPTCHA_SITE_KEY, {action: 'enterprise_intake'}).then(resolve).catch(reject);
+      });
+    });
+
+    // Build email params
+    var params = {
+      to_email:       'team@crosstouchmarketing.com',
+      from_name:      formData.first_name + ' ' + formData.last_name,
+      from_email:     formData.email,
+      company:        formData.company,
+      role:           formData.role || 'Not specified',
+      website:        formData.website || 'Not specified',
+      biz_type:       formData.biz_type || 'Not specified',
+      esp:            formData.esp,
+      list_size:      formData.list_size || 'Not specified',
+      team_size:      formData.team_size || 'Not specified',
+      email_revenue:  formData.email_revenue || 'Not specified',
+      primary_goal:   formData.primary_goal || 'Not specified',
+      challenge:      formData.challenge,
+      additional:     formData.additional || 'None',
+      recaptcha_token: token,
+      submitted_at:   new Date().toLocaleString('en-US', {timeZone:'America/New_York'})
+    };
+
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+
+    // Show success
+    document.getElementById('section-4').style.display = 'none';
+    document.getElementById('step-ind-4').classList.add('done');
+    document.getElementById('success-screen').style.display = 'block';
+
+  } catch(err) {
+    console.error(err);
+    btn.disabled = false;
+    btn.textContent = 'Submit & Get Started →';
+    document.getElementById('error-msg').style.display = 'block';
+  }
+}
+</script>
+</body>
+</html>
