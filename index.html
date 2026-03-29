@@ -604,6 +604,10 @@ function renderQuestion(c) {
     + '<button class="btn-ghost" onclick="'+backFn+'">← Back</button>'
     + '<button class="btn-primary"'+disabled+' onclick="'+nextFn+'">'+nextLabel+'</button>'
     + '</div></div>';
+  var auditCard = document.getElementById('audit-container');
+  if (auditCard) {
+    auditCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 function renderLoading(c) {
