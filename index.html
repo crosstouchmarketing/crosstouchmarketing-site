@@ -433,6 +433,21 @@ footer{background:var(--text);color:rgba(255,255,255,0.6);padding:48px 40px;}
 // ── BILLING TOGGLE ──────────────────────────────────────────────
 var isAnnual = false;
 
+  function saveAndRedirect(e) {
+  e.preventDefault();
+  try {
+    var auditData = {
+      answers: answers,
+      scores: scoreAnswers(answers),
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem('crosstouch_pending_audit', JSON.stringify(auditData));
+  } catch(err) {
+    console.log('Could not save audit to localStorage:', err);
+  }
+  window.location.href = 'https://app.crosstouchmarketing.com/signup?plan=starter&billing=monthly&audit=1';
+}
+
 function toggleBilling() {
   isAnnual = !isAnnual;
   document.getElementById('knob').style.transform = isAnnual ? 'translateX(26px)' : 'translateX(0)';
@@ -636,7 +651,7 @@ function renderResults(c) {
     + '<div style="font-family:Playfair Display,serif;font-size:22px;margin-bottom:10px;">Your full report has deeper insights waiting.</div>'
     + '<div style="font-size:14px;opacity:0.9;margin-bottom:20px;line-height:1.6;font-weight:500;">Unlock your complete gap analysis, personalized 90-day roadmap, AI copywriting suite, and subject line generator — starting at $47/month.</div>'
     + '<div style="margin-bottom:24px;">'+["Full Gap Analysis","90-Day Roadmap","AI Copywriting","Subject Lines","Unlimited Audits"].map(function(f){return '<span class="upsell-feat">'+f+'</span>';}).join('')+'</div>'
-    + '<a href="https://app.crosstouchmarketing.com/signup?plan=starter&billing=monthly" class="btn-primary" style="background:white;color:#084f52;display:inline-flex;">Unlock Full Report — $47/mo →</a>'
+    + '<a href="#" onclick="saveAndRedirect(event)" class="btn-primary" style="background:white;color:#084f52;display:inline-flex;">Unlock Full Report — $47/mo →</a>'
     + '</div>'
     + '<div style="text-align:center;margin-top:16px;"><button class="btn-ghost" onclick="auditState=\'intro\';currentStep=0;answers={};cachedRecs=[];cachedQW=\'\';render();">Start a New Audit</button></div>'
     + '</div>';
