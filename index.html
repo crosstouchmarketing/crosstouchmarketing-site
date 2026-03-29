@@ -321,7 +321,7 @@ footer{background:var(--text);color:rgba(255,255,255,0.6);padding:48px 40px;}
           <div class="pricing-feature"><span class="check">✓</span>Subject line generator</div>
           <div class="pricing-feature"><span class="check">✓</span>Unlimited audits</div>
         </div>
-        <button class="pricing-cta cta-teal" onclick="window.location.href='https://app.crosstouchmarketing.com/signup?plan=starter&billing=monthly'">Get Started</button>
+        <button class="pricing-cta cta-teal" onclick="startGuestCheckout('starter','monthly')">Get Started</button>
       </div>
 
       <!-- Growth -->
@@ -337,7 +337,7 @@ footer{background:var(--text);color:rgba(255,255,255,0.6);padding:48px 40px;}
           <div class="pricing-feature"><span class="check">✓</span>Blog writer</div>
           <div class="pricing-feature"><span class="check">✓</span>Ask AI Strategist</div>
         </div>
-        <button class="pricing-cta cta-teal" onclick="window.location.href='https://app.crosstouchmarketing.com/signup?plan=growth&billing=monthly'">Get Started</button>
+        <button class="pricing-cta cta-teal" onclick="startGuestCheckout('growth','monthly')">Get Started</button>
       </div>
 
       <!-- Enterprise -->
@@ -353,7 +353,7 @@ footer{background:var(--text);color:rgba(255,255,255,0.6);padding:48px 40px;}
           <div class="pricing-feature"><span class="check">✓</span>Monthly strategy session</div>
           <div class="pricing-feature"><span class="check">✓</span>Priority support</div>
         </div>
-        <button class="pricing-cta cta-white" onclick="window.location.href='enterprise-intake.html'">Get Started</button>
+        <button class="pricing-cta cta-white" onclick="startGuestCheckout('enterprise','monthly')">Get Started</button>
       </div>
     </div>
     <p style="text-align:center;margin-top:24px;font-size:14px;color:var(--text-mid);font-weight:500;">Cancel anytime. Switch between monthly and annual billing at any time.</p>
@@ -432,6 +432,35 @@ footer{background:var(--text);color:rgba(255,255,255,0.6);padding:48px 40px;}
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── BILLING TOGGLE ──────────────────────────────────────────────
 var isAnnual = false;
+
+async function startGuestCheckout(plan, billingOverride) {
+  var billing = billingOverride || (isAnnual ? 'annual' : 'monthly');
+  var priceMap = {
+    'starter-monthly':    'price_1TGMox5PWOw7KYwapPUcFUT5',
+    'starter-annual':     'price_1TGMox5PWOw7KYwahiVBy9on',
+    'growth-monthly':     'price_1TGMow5PWOw7KYwadJFzCvFG',
+    'growth-annual':      'price_1TGMox5PWOw7KYwalbl3NCxC',
+    'enterprise-monthly': 'price_1TGMoy5PWOw7KYwaZX7YSF77',
+    'enterprise-annual':  'price_1TGMoy5PWOw7KYwaEwMXXpn2',
+  };
+  var priceId = priceMap[plan + '-' + billing];
+  if (!priceId) { alert('Plan not found. Please try again.'); return; }
+  try {
+    var res = await fetch('https://app.crosstouchmarketing.com/api/guest-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ priceId: priceId, plan: plan, billing: billing })
+    });
+    var data = await res.json();
+    if (data.url) {
+      window.location.href = data.url;
+    } else {
+      alert('Something went wrong. Please try again.');
+    }
+  } catch(e) {
+    alert('Something went wrong. Please try again.');
+  }
+}
 
   function saveAndRedirect(e) {
   e.preventDefault();
@@ -655,7 +684,7 @@ function renderResults(c) {
     + '<div style="font-family:Playfair Display,serif;font-size:22px;margin-bottom:10px;">Your full report has deeper insights waiting.</div>'
     + '<div style="font-size:14px;opacity:0.9;margin-bottom:20px;line-height:1.6;font-weight:500;">Unlock your complete gap analysis, personalized 90-day roadmap, AI copywriting suite, and subject line generator — starting at $47/month.</div>'
     + '<div style="margin-bottom:24px;">'+["Full Gap Analysis","90-Day Roadmap","AI Copywriting","Subject Lines","Unlimited Audits"].map(function(f){return '<span class="upsell-feat">'+f+'</span>';}).join('')+'</div>'
-    + '<a href="#" onclick="saveAndRedirect(event)" class="btn-primary" style="background:white;color:#084f52;display:inline-flex;">Unlock Full Report — $47/mo →</a>'
+    + '<a href="#pricing" onclick="window.scrollTo({top:document.getElementById(\'pricing\').offsetTop-80,behavior:\'smooth\'});return false;" class="btn-primary" style="background:white;color:#084f52;display:inline-flex;">View Plans & Unlock Full Report →</a>'
     + '</div>'
     + '<div style="text-align:center;margin-top:16px;"><button class="btn-ghost" onclick="auditState=\'intro\';currentStep=0;answers={};cachedRecs=[];cachedQW=\'\';render();">Start a New Audit</button></div>'
     + '</div>';
